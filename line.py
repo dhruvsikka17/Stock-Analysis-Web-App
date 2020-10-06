@@ -28,7 +28,7 @@ def main():
     data =data.dropna()
     #Adjusted Close Price
     st.header("Adjusted Close Price")
-    st.line_chart(data['Adj Close'])
+    st.area_chart(data['Adj Close'])
 
     #Simple Moving Average
     data['Simple Moving Average'] = data['Adj Close'].rolling(30).mean()
@@ -45,7 +45,7 @@ def main():
     data['Returns']=data['Adj Close'].pct_change(1)
     data['Cumulative Return'] = ( 1 + data['Returns'] ).cumprod()
     st.header("Cumulative Daily Returns")
-    st.line_chart(data['Cumulative Return'])
+    st.area_chart(data['Cumulative Return'])
 
 if __name__ == "__main__":
     main()
