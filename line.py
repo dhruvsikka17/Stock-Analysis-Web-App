@@ -8,7 +8,7 @@ def user_input_features():
     today = date.today()
     x = today.strftime("%Y-%m-%d")
     ticker = st.sidebar.text_input("Ticker", 'AAPL')
-    start_date = st.sidebar.text_input("Start Date", '2019-01-01')
+    start_date = st.sidebar.text_input("Start Date", '2020-01-01')
     end_date = st.sidebar.text_input("End Date",x)
     return ticker, start_date, end_date
 
