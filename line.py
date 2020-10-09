@@ -6,9 +6,9 @@ from datetime import date
 
 def user_input_features():
     today = date.today()
-    x = today.strftime("%Y-%m-%d")
+    x = datetime.date.today()
     ticker = st.sidebar.text_input("Ticker", 'AAPL')
-    start_date = st.sidebar.text_input("Start Date", '2020-01-01')
+    start_date = st.sidebar.text_input("Start Date","2019-01-01")
     end_date = st.sidebar.text_input("End Date",x)
     return ticker, start_date, end_date
 
@@ -26,26 +26,38 @@ def main():
 
     data = yf.download(symbol,start,end)
     data =data.dropna()
+
+#Indicator Options
+    indicators = st.sidebar.selectbox("Indicators", options=('None','Simple Moving Average','Bollinger Bands'))
     #Adjusted Close Price
     st.header("Adjusted Close Price")
     st.area_chart(data['Adj Close'])
 
     #Simple Moving Average
-    data['Simple Moving Average'] = data['Adj Close'].rolling(30).mean()
-    st.header("Simple Moving Average")
-    st.line_chart(data[['Adj Close','Simple Moving Average']])
+    if indicators == 'Simple Moving Average':
+        period = st.sidebar.slider('Time Period', 0, 150, 30)
+        data['Simple Moving Average'] = data['Adj Close'].rolling(period).mean()
+        st.header("Simple Moving Average")
+        st.line_chart(data[['Adj Close','Simple Moving Average']])
 
     # Bollinger Bands
-    data['Upper Band']=(data['Adj Close'].rolling(30).mean() + data['Adj Close'].rolling(30).std()*2)
-    data['Lower Band'] =(data['Adj Close'].rolling(30).mean() - data['Adj Close'].rolling(30).std()*2)
-    st.header("Bollinger Bands")
-    st.line_chart(data[['Adj Close','Upper Band','Simple Moving Average','Lower Band']])
+    if indicators == 'Bollinger Bands':
+        period = st.sidebar.slider('Time Period', 0, 150, 30)
+        data['Upper Band']=(data['Adj Close'].rolling(period).mean() + data['Adj Close'].rolling(period).std()*2)
+        data['Lower Band']=(data['Adj Close'].rolling(period).mean() - data['Adj Close'].rolling(period).std()*2)
+        data['Simple Moving Average'] = data['Adj Close'].rolling(period).mean()
+        st.header("Bollinger Bands")
+        st.line_chart(data[['Adj Close','Upper Band','Simple Moving Average','Lower Band']])
+
+#Other Graphs Options
+    other_graphs = st.sidebar.selectbox("Other graphs", options=('None','Cumulative Returns'))
 
     #Cumulative Daily Returns
-    data['Returns']=data['Adj Close'].pct_change(1)
-    data['Cumulative Return'] = ( 1 + data['Returns'] ).cumprod()
-    st.header("Cumulative Daily Returns")
-    st.area_chart(data['Cumulative Return'])
+    if other_graphs == 'Cumulative Returns':
+        data['Returns']=data['Adj Close'].pct_change(1)
+        data['Cumulative Return'] = ( 1 + data['Returns'] ).cumprod()
+        st.header("Cumulative Daily Returns")
+        st.area_chart(data['Cumulative Return'])
 
 if __name__ == "__main__":
     main()
