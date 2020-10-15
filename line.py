@@ -2,8 +2,12 @@ import streamlit as st
 import pandas as pd
 import datetime
 import yfinance as yf
+import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
 from datetime import date
-#import talib
+import matplotlib as mlp
+import ta
+import seaborn as sns
 
 def user_input_features():
     today = date.today()
@@ -29,7 +33,7 @@ def main():
     data =data.dropna()
 
 #Indicator Options
-    indicators = st.sidebar.selectbox("Indicators", options=('None','Simple Moving Average','Bollinger Bands'))
+    indicators = st.sidebar.selectbox("Indicators", options=('None','Simple Moving Average','Bollinger Bands',"RSI","OBV"))
     #Adjusted Close Price
     st.header("Adjusted Close Price")
     st.area_chart(data['Adj Close'])
@@ -49,6 +53,18 @@ def main():
         data['Simple Moving Average'] = data['Adj Close'].rolling(period).mean()
         st.header("Bollinger Bands")
         st.line_chart(data[['Adj Close','Upper Band','Simple Moving Average','Lower Band']])
+    #RSI
+    if indicators == 'RSI':
+        period = st.sidebar.slider('Time Period', 0, 150, 14)
+        data['RSI']= ta.momentum.rsi(data['Adj Close'],n=period)
+        st.header("Relative Strength Index")
+        st.line_chart(data['RSI'])
+
+    #OBV
+    if indicators =='OBV':
+        data['OBV'] = ta.volume.on_balance_volume(data['Adj Close'],data['Volume'])
+        st.header("On Balance Volume")
+        st.line_chart(data['OBV'])
 
 #Other Graphs Options
     other_graphs = st.sidebar.selectbox("Other graphs", options=('None','Cumulative Returns'))
