@@ -16,7 +16,7 @@ def user_input_features():
 def main():
     st.write("""
     # Stocks Analysis Web Application
-    Shown below are the **Moving Average Crossovers**, **Bollinger Bands**, and **Cumulative Daily Returns** of any stock!
+    Shown below are the **Moving Average Crossovers**, **Bollinger Bands**, **RSI**, **OBV** and **Cumulative Daily Returns** of any stock!
     """)
     st.sidebar.header('User Inputs')
 
