@@ -2,12 +2,8 @@ import streamlit as st
 import pandas as pd
 import datetime
 import yfinance as yf
-import matplotlib.pyplot as plt
-from matplotlib.dates import DateFormatter
 from datetime import date
-import matplotlib as mlp
 import ta
-import seaborn as sns
 
 def user_input_features():
     today = date.today()
