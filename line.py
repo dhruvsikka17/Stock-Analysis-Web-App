@@ -57,7 +57,7 @@ def main():
         st.line_chart(data['RSI'])
 
     #OBV
-    if indicators == 'OBV'
+    if indicators == 'OBV':
         data['OBV'] = talib.OBV(data['Adj Close'], data['Volume'])/10**6
         st.header("On Balance Volume")
         st.line_chart(data['OBV'])
