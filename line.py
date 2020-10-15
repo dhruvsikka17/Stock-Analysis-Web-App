@@ -3,7 +3,7 @@ import pandas as pd
 import datetime
 import yfinance as yf
 from datetime import date
-import talib
+#import talib
 
 def user_input_features():
     today = date.today()
@@ -16,7 +16,7 @@ def user_input_features():
 def main():
     st.write("""
     # Stocks Analysis Web Application
-    Shown below are the **Moving Average Crossovers**, **Bollinger Bands**, **RSI** and **Cumulative Daily Returns** of any stock!
+    Shown below are the **Moving Average Crossovers**, **Bollinger Bands**, and **Cumulative Daily Returns** of any stock!
     """)
     st.sidebar.header('User Inputs')
 
@@ -29,7 +29,7 @@ def main():
     data =data.dropna()
 
 #Indicator Options
-    indicators = st.sidebar.selectbox("Indicators", options=('None','Simple Moving Average','Bollinger Bands','RSI','OBV'))
+    indicators = st.sidebar.selectbox("Indicators", options=('None','Simple Moving Average','Bollinger Bands'))
     #Adjusted Close Price
     st.header("Adjusted Close Price")
     st.area_chart(data['Adj Close'])
@@ -49,18 +49,6 @@ def main():
         data['Simple Moving Average'] = data['Adj Close'].rolling(period).mean()
         st.header("Bollinger Bands")
         st.line_chart(data[['Adj Close','Upper Band','Simple Moving Average','Lower Band']])
-    #RSI
-    if indicators == 'RSI':
-        period = st.sidebar.slider('Time Period',0,150,14)
-        data['RSI'] = talib.RSI(data['Adj Close'], timeperiod=period)
-        st.header("Relative Strength Index")
-        st.line_chart(data['RSI'])
-
-    #OBV
-    if indicators == 'OBV':
-        data['OBV'] = talib.OBV(data['Adj Close'], data['Volume'])/10**6
-        st.header("On Balance Volume")
-        st.line_chart(data['OBV'])
 
 #Other Graphs Options
     other_graphs = st.sidebar.selectbox("Other graphs", options=('None','Cumulative Returns'))
