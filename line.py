@@ -3,6 +3,7 @@ import pandas as pd
 import datetime
 import yfinance as yf
 from datetime import date
+import plotly.express as px
 import ta
 
 def user_input_features():
@@ -32,14 +33,17 @@ def main():
     indicators = st.sidebar.selectbox("Indicators", options=('None','Simple Moving Average','Bollinger Bands',"RSI","OBV"))
     #Adjusted Close Price
     st.header("Adjusted Close Price")
-    st.area_chart(data['Adj Close'])
+    fig=px.area(data,x= data.index, y = 'Adj Close',template = "plotly_dark",width=900,height=500,labels={"Adj Close":"Adjusted Close"})
+    st.plotly_chart(fig)
 
     #Simple Moving Average
     if indicators == 'Simple Moving Average':
         period = st.sidebar.slider('Time Period', 0, 150, 30)
         data['Simple Moving Average'] = data['Adj Close'].rolling(period).mean()
         st.header("Simple Moving Average")
-        st.line_chart(data[['Adj Close','Simple Moving Average']])
+        fig=px.line(data,x= data.index, y = ['Adj Close','Simple Moving Average'],width=900,height=500,template = "plotly_dark",labels={"variable":"","value":"Value","Adj Close":"Adjusted Close"})
+        st.plotly_chart(fig)
+
 
     # Bollinger Bands
     if indicators == 'Bollinger Bands':
@@ -48,19 +52,22 @@ def main():
         data['Lower Band']=(data['Adj Close'].rolling(period).mean() - data['Adj Close'].rolling(period).std()*2)
         data['Simple Moving Average'] = data['Adj Close'].rolling(period).mean()
         st.header("Bollinger Bands")
-        st.line_chart(data[['Adj Close','Upper Band','Simple Moving Average','Lower Band']])
+        fig=px.line(data,x= data.index, y = ['Adj Close','Upper Band','Simple Moving Average','Lower Band'],width=900,height=500,template = "plotly_dark",labels={"variable":"","Adj Close":"Adjusted Close","value":"Value"})
+        st.plotly_chart(fig)
     #RSI
     if indicators == 'RSI':
         period = st.sidebar.slider('Time Period', 0, 150, 14)
         data['RSI']= ta.momentum.rsi(data['Adj Close'],n=period)
         st.header("Relative Strength Index")
-        st.line_chart(data['RSI'])
+        fig=px.line(data,x= data.index, y = 'RSI',width=900,height=500,template = "plotly_dark")
+        st.plotly_chart(fig)
 
     #OBV
     if indicators =='OBV':
         data['OBV'] = ta.volume.on_balance_volume(data['Adj Close'],data['Volume'])
         st.header("On Balance Volume")
-        st.line_chart(data['OBV'])
+        fig=px.line(data,x= data.index, y = 'OBV',width=900,height=500,template = "plotly_dark")
+        st.plotly_chart(fig)
 
 #Other Graphs Options
     other_graphs = st.sidebar.selectbox("Other graphs", options=('None','Cumulative Returns'))
@@ -70,7 +77,8 @@ def main():
         data['Returns']=data['Adj Close'].pct_change(1)
         data['Cumulative Return'] = ( 1 + data['Returns'] ).cumprod()
         st.header("Cumulative Daily Returns")
-        st.area_chart(data['Cumulative Return'])
+        fig=px.area(data,x= data.index, y = 'Cumulative Return',width=900,height=500,template = "plotly_dark")
+        st.plotly_chart(fig)
 
 if __name__ == "__main__":
     main()
